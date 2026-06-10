@@ -4,27 +4,57 @@ import axios from "axios";
 import UploadDocument from "./components/UploadDocument";
 import DocumentList from "./components/DocumentList";
 import PdfViewer from "./components/PdfViewer";
+import SignaturePad from "./components/SignaturePad";
 
 function App() {
-  const [documents, setDocuments] =
-    useState([]);
+  const [documents, setDocuments] = useState([]);
 
-  const [selectedPdf, setSelectedPdf] =
-    useState(null);
+  const [selectedPdf, setSelectedPdf] = useState(null);
 
-const fetchDocuments = async () => {
-  const res = await axios.get(
-    "http://localhost:5000/api/docs"
-  );
+  const [signature, setSignature] = useState(null);
 
-  console.log("Documents:", res.data);
+  const fetchDocuments = async () => {
+    const res = await axios.get(
+      "http://localhost:5000/api/docs"
+    );
 
-  setDocuments(res.data);
-};
+    setDocuments(res.data);
+  };
 
   useEffect(() => {
     fetchDocuments();
   }, []);
+
+  // Day 5 - Sign PDF
+  const signPdf = async () => {
+    try {
+      if (!selectedPdf) {
+        alert("Please select a PDF");
+        return;
+      }
+
+      if (!signature) {
+        alert("Please save a signature first");
+        return;
+      }
+
+      const res = await axios.post(
+        "http://localhost:5000/api/sign-pdf",
+        {
+          pdfUrl: selectedPdf,
+          signature,
+        }
+      );
+
+      window.open(
+        res.data.downloadUrl,
+        "_blank"
+      );
+    } catch (err) {
+      console.error(err);
+      alert("Failed to sign PDF");
+    }
+  };
 
   return (
     <div className="p-6">
@@ -37,8 +67,7 @@ const fetchDocuments = async () => {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns:
-            "1fr 2fr",
+          gridTemplateColumns: "1fr 2fr",
           gap: "20px",
           marginTop: "20px",
         }}
@@ -49,6 +78,20 @@ const fetchDocuments = async () => {
         />
 
         <PdfViewer file={selectedPdf} />
+      </div>
+
+      {/* Signature Pad */}
+      <div style={{ marginTop: "30px" }}>
+        <SignaturePad
+          setSignature={setSignature}
+        />
+      </div>
+
+      {/* Sign PDF Button */}
+      <div style={{ marginTop: "20px" }}>
+        <button onClick={signPdf}>
+          Sign PDF
+        </button>
       </div>
     </div>
   );

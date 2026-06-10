@@ -19,10 +19,11 @@ app.use(express.json());
 const authRoutes = require("./routes/authRoutes");
 const protectedRoutes = require("./routes/protectedRoutes");
 const documentRoutes = require("./routes/documentRoutes");
-
+const signPdfRoute = require("./routes/signPdfRoute");
 app.use("/api/auth", authRoutes);
 app.use("/api", protectedRoutes);
 app.use("/api/docs", documentRoutes);
+app.use("/api", signPdfRoute);
 
 app.use("/uploads", express.static("uploads"));
 
