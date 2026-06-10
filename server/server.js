@@ -5,13 +5,26 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 
 const app = express();
+
+/* CORS FIRST */
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+
+app.use(express.json());
+
 const authRoutes = require("./routes/authRoutes");
 const protectedRoutes = require("./routes/protectedRoutes");
-app.use(express.json());
+const documentRoutes = require("./routes/documentRoutes");
+
 app.use("/api/auth", authRoutes);
 app.use("/api", protectedRoutes);
-app.use(cors());
-app.use(express.json());
+app.use("/api/docs", documentRoutes);
+
+app.use("/uploads", express.static("uploads"));
 
 mongoose
   .connect(process.env.MONGO_URI)
