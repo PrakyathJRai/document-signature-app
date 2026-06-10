@@ -12,6 +12,11 @@ const documentSchema = new mongoose.Schema(
       required: true,
     },
 
+    status: {
+      type: String,
+      default: "Pending"
+},
+
     uploadedBy: {
       type: String,
       default: "User",

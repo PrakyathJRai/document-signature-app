@@ -2,6 +2,7 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const { PDFDocument } = require("pdf-lib");
+const DocumentModel = require("../models/Document");
 
 const router = express.Router();
 
@@ -54,6 +55,17 @@ router.post("/sign-pdf", async (req, res) => {
       signedPath,
       signedPdfBytes
     );
+
+   await DocumentModel.findOneAndUpdate(
+  {
+    filePath: {
+      $regex: fileName
+    }
+  },
+  {
+    status: "Signed"
+  }
+);
 
     res.json({
       downloadUrl:

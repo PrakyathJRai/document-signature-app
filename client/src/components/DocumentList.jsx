@@ -9,7 +9,7 @@ function DocumentList({
       {documents.map((doc) => (
         <div
           key={doc._id}
-          className="border p-3 my-2 cursor-pointer"
+          className="border p-3 my-2 cursor-pointer rounded"
           onClick={() =>
             setSelectedPdf(
               `http://localhost:5000/${doc.filePath.replace(
@@ -20,10 +20,34 @@ function DocumentList({
           }
         >
           <strong>{doc.fileName}</strong>
-          <br />
-          {new Date(
-            doc.uploadedAt
-          ).toLocaleDateString()}
+
+          <p>
+            {new Date(
+              doc.uploadedAt
+            ).toLocaleDateString()}
+          </p>
+
+          <p>
+            Status:
+            <span
+              style={{
+                backgroundColor:
+                  doc.status === "Signed"
+                    ? "#d4edda"
+                    : "#fff3cd",
+                color:
+                  doc.status === "Signed"
+                    ? "#155724"
+                    : "#856404",
+                padding: "4px 10px",
+                borderRadius: "20px",
+                marginLeft: "8px",
+                fontWeight: "bold",
+              }}
+            >
+              {doc.status}
+            </span>
+          </p>
         </div>
       ))}
     </div>
