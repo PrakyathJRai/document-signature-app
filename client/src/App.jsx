@@ -14,6 +14,10 @@ function App() {
 
   const [signature, setSignature] = useState(null);
 
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const [filter, setFilter] = useState("All");
+
   const fetchDocuments = async () => {
     const res = await axios.get(
       "http://localhost:5000/api/docs"
@@ -47,21 +51,75 @@ function App() {
         }
       );
 
-      window.open(
-        res.data.downloadUrl,
-        "_blank"
-      );
+     window.open(
+  res.data.downloadUrl,
+  "_blank"
+);
+
+await fetchDocuments();
     } catch (err) {
       console.error(err);
       alert("Failed to sign PDF");
     }
   };
+
+const filteredDocuments = documents.filter((doc) => {
+  const matchesSearch =
+    doc.fileName
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+
+  const matchesFilter =
+    filter === "All"
+      ? true
+      : doc.status === filter;
+
+  return matchesSearch && matchesFilter;
+});
+
+
 return (
   <div className="p-6">
     <h1>Document Signature App</h1>
 
-    {/* Day 6 Dashboard */}
     <Dashboard documents={documents} />
+
+    {/* Search Bar */}
+    <input
+      type="text"
+      placeholder="Search documents..."
+      value={searchTerm}
+      onChange={(e) =>
+        setSearchTerm(e.target.value)
+      }
+      style={{
+        padding: "10px",
+        width: "100%",
+        marginBottom: "20px",
+        borderRadius: "8px",
+        border: "1px solid #ccc",
+      }}
+    />
+
+    <div
+  style={{
+    marginBottom: "20px",
+    display: "flex",
+    gap: "10px",
+  }}
+>
+  <button onClick={() => setFilter("All")}>
+    All
+  </button>
+
+  <button onClick={() => setFilter("Signed")}>
+    Signed
+  </button>
+
+  <button onClick={() => setFilter("Pending")}>
+    Pending
+  </button>
+</div>
 
     <UploadDocument
       fetchDocuments={fetchDocuments}
@@ -76,7 +134,7 @@ return (
       }}
     >
       <DocumentList
-        documents={documents}
+        documents={filteredDocuments}
         setSelectedPdf={setSelectedPdf}
       />
 

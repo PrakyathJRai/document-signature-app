@@ -11,9 +11,10 @@ router.post("/sign-pdf", async (req, res) => {
     const { pdfUrl, signature } = req.body;
 
     if (!pdfUrl || !signature) {
-      return res
-        .status(400)
-        .json({ message: "Missing data" });
+      return res.status(400).json({
+        success: false,
+        message: "Missing data",
+      });
     }
 
     const fileName = pdfUrl.split("/").pop();
@@ -39,11 +40,9 @@ router.post("/sign-pdf", async (req, res) => {
       height: 70,
     });
 
-    const signedPdfBytes =
-      await pdfDoc.save();
+    const signedPdfBytes = await pdfDoc.save();
 
-    const signedName =
-      "signed-" + fileName;
+    const signedName = "signed-" + fileName;
 
     const signedPath = path.join(
       __dirname,
@@ -56,26 +55,40 @@ router.post("/sign-pdf", async (req, res) => {
       signedPdfBytes
     );
 
-   await DocumentModel.findOneAndUpdate(
-  {
-    filePath: {
-      $regex: fileName
-    }
-  },
-  {
-    status: "Signed"
-  }
-);
+    console.log("File Name:", fileName);
 
-    res.json({
-      downloadUrl:
-        `http://localhost:5000/uploads/${signedName}`,
+    const updatedDoc = await DocumentModel.findOneAndUpdate(
+      {
+        filePath: {
+          $regex: fileName.replace(
+            /[.*+?^${}()|[\]\\]/g,
+            "\\$&"
+          ),
+        },
+      },
+      {
+        status: "Signed",
+      },
+      {
+        new: true,
+      }
+    );
+
+    console.log("Updated Document:", updatedDoc);
+
+    res.status(200).json({
+      success: true,
+      message: "PDF signed successfully and document status updated.",
+      downloadUrl: `http://localhost:5000/uploads/${signedName}`,
     });
+
   } catch (err) {
-    console.log(err);
+    console.error(err);
 
     res.status(500).json({
-      message: err.message,
+      success: false,
+      message: "Error signing PDF",
+      error: err.message,
     });
   }
 });
