@@ -17,6 +17,7 @@
     "react-dom": "^19.2.6",
     "react-pdf": "^10.4.1",
     "react-sketch-canvas": "^8.0.0",
+    "react-toastify": "^11.1.0",
     "tailwindcss": "^4.3.0"
   },
   "devDependencies": {

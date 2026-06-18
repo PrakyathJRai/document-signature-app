@@ -12,10 +12,17 @@ const documentSchema = new mongoose.Schema(
       required: true,
     },
 
+    // Original document status
     status: {
       type: String,
-      default: "Pending"
-},
+      default: "Pending",
+    },
+
+    // Day 9 - Store signed PDF path
+    signedPdfPath: {
+      type: String,
+      default: "",
+    },
 
     uploadedBy: {
       type: String,

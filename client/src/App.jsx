@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import axios from "axios";
 
 import UploadDocument from "./components/UploadDocument";
@@ -18,50 +19,68 @@ function App() {
 
   const [filter, setFilter] = useState("All");
 
-  const fetchDocuments = async () => {
+  const [signing, setSigning] = useState(false);
+
+const fetchDocuments = async () => {
+  try {
     const res = await axios.get(
       "http://localhost:5000/api/docs"
     );
 
     setDocuments(res.data);
-  };
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to fetch documents");
+  }
+};
 
-  useEffect(() => {
-    fetchDocuments();
-  }, []);
+useEffect(() => {
+  fetchDocuments();
+}, []);
 
-  // Day 5 - Sign PDF
-  const signPdf = async () => {
-    try {
-      if (!selectedPdf) {
-        alert("Please select a PDF");
-        return;
-      }
+const signPdf = async () => {
+  const confirmSign = window.confirm(
+    "Do you want to sign this document?"
+  );
 
-      if (!signature) {
-        alert("Please save a signature first");
-        return;
-      }
+  if (!confirmSign) return;
 
-      const res = await axios.post(
-        "http://localhost:5000/api/sign-pdf",
-        {
-          pdfUrl: selectedPdf,
-          signature,
-        }
-      );
-
-     window.open(
-  res.data.downloadUrl,
-  "_blank"
-);
-
-await fetchDocuments();
-    } catch (err) {
-      console.error(err);
-      alert("Failed to sign PDF");
+  try {
+    if (!selectedPdf) {
+      toast.error("Please select a PDF");
+      return;
     }
-  };
+
+    if (!signature) {
+      toast.error("Please save a signature first");
+      return;
+    }
+
+    setSigning(true);
+
+    const res = await axios.post(
+      "http://localhost:5000/api/sign-pdf",
+      {
+        pdfUrl: selectedPdf,
+        signature,
+      }
+    );
+
+    toast.success("PDF signed successfully!");
+
+    window.open(
+      res.data.downloadUrl,
+      "_blank"
+    );
+
+    await fetchDocuments();
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to sign PDF");
+  } finally {
+    setSigning(false);
+  }
+};
 
 const filteredDocuments = documents.filter((doc) => {
   const matchesSearch =
@@ -79,58 +98,80 @@ const filteredDocuments = documents.filter((doc) => {
 
 
 return (
-  <div className="p-6">
-    <h1>Document Signature App</h1>
+  <div
+    style={{
+      padding: "30px",
+      maxWidth: "1400px",
+      margin: "0 auto",
+      backgroundColor: "#f8fafc",
+      minHeight: "100vh",
+    }}
+  >
+    <h1
+      style={{
+        textAlign: "center",
+        marginBottom: "25px",
+        fontSize: "40px",
+        fontWeight: "bold",
+        color: "#1e293b",
+      }}
+    >
+      📄 Document Signature App
+    </h1>
 
     <Dashboard documents={documents} />
 
     {/* Search Bar */}
     <input
       type="text"
-      placeholder="Search documents..."
+      placeholder="🔍 Search documents..."
       value={searchTerm}
       onChange={(e) =>
         setSearchTerm(e.target.value)
       }
       style={{
-        padding: "10px",
+        padding: "12px",
         width: "100%",
         marginBottom: "20px",
-        borderRadius: "8px",
-        border: "1px solid #ccc",
+        borderRadius: "10px",
+        border: "1px solid #d1d5db",
+        fontSize: "16px",
       }}
     />
 
+    {/* Filters */}
     <div
-  style={{
-    marginBottom: "20px",
-    display: "flex",
-    gap: "10px",
-  }}
->
-  <button onClick={() => setFilter("All")}>
-    All
-  </button>
+      style={{
+        marginBottom: "20px",
+        display: "flex",
+        gap: "10px",
+      }}
+    >
+      <button onClick={() => setFilter("All")}>
+        All
+      </button>
 
-  <button onClick={() => setFilter("Signed")}>
-    Signed
-  </button>
+      <button onClick={() => setFilter("Signed")}>
+        Signed
+      </button>
 
-  <button onClick={() => setFilter("Pending")}>
-    Pending
-  </button>
-</div>
+      <button onClick={() => setFilter("Pending")}>
+        Pending
+      </button>
+    </div>
 
     <UploadDocument
       fetchDocuments={fetchDocuments}
     />
 
+    {/* Main Layout */}
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "1fr 2fr",
-        gap: "20px",
-        marginTop: "20px",
+        gridTemplateColumns: "400px 1fr",
+        gap: "25px",
+        marginTop: "25px",
+        alignItems: "start",
       }}
     >
       <DocumentList
@@ -138,20 +179,75 @@ return (
         setSelectedPdf={setSelectedPdf}
       />
 
-      <PdfViewer file={selectedPdf} />
+      <div
+        style={{
+          background: "white",
+          borderRadius: "12px",
+          padding: "20px",
+          boxShadow:
+            "0 2px 10px rgba(0,0,0,0.08)",
+        }}
+      >
+        <PdfViewer file={selectedPdf} />
+      </div>
     </div>
 
-    <div style={{ marginTop: "30px" }}>
+    {/* Signature Section */}
+    <div
+      style={{
+        marginTop: "30px",
+        background: "white",
+        padding: "20px",
+        borderRadius: "12px",
+        boxShadow:
+          "0 2px 10px rgba(0,0,0,0.08)",
+      }}
+    >
       <SignaturePad
         setSignature={setSignature}
       />
     </div>
 
-    <div style={{ marginTop: "20px" }}>
-      <button onClick={signPdf}>
-        Sign PDF
-      </button>
+    {/* Sign Button */}
+    <div
+      style={{
+        marginTop: "20px",
+        textAlign: "center",
+      }}
+    >
+<button
+  onClick={signPdf}
+  disabled={signing}
+  style={{
+    background: signing
+      ? "#94a3b8"
+      : "#2563eb",
+    color: "white",
+    border: "none",
+    padding: "12px 30px",
+    borderRadius: "8px",
+    cursor: signing
+      ? "not-allowed"
+      : "pointer",
+    fontSize: "16px",
+    fontWeight: "bold",
+  }}
+>
+  {signing
+    ? "Signing..."
+    : "✍️ Sign PDF"}
+</button>
     </div>
+    <footer
+  style={{
+    textAlign: "center",
+    marginTop: "40px",
+    color: "#64748b",
+    fontSize: "14px",
+  }}
+>
+  Developed by Prakyath J Rai
+</footer>
   </div>
 );
 }

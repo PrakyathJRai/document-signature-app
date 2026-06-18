@@ -4,6 +4,7 @@ const multer = require("multer");
 const {
   uploadDocument,
   getDocuments,
+  deleteDocument,
 } = require("../controllers/documentController");
 
 const router = express.Router();
@@ -30,5 +31,8 @@ router.post(
 );
 
 router.get("/", getDocuments);
+
+// Day 9 - Delete Document
+router.delete("/:id", deleteDocument);
 
 module.exports = router;
