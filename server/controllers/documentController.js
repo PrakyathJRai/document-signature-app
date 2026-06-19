@@ -4,6 +4,8 @@ const Document = require("../models/Document");
 
 const uploadDocument = async (req, res) => {
   try {
+    console.log("FILE:", req.file);
+
     const document = await Document.create({
       fileName: req.file.originalname,
       filePath: req.file.path,
@@ -11,6 +13,8 @@ const uploadDocument = async (req, res) => {
 
     res.status(201).json(document);
   } catch (error) {
+    console.error("UPLOAD ERROR:", error);
+
     res.status(500).json({
       message: error.message,
     });
