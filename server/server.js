@@ -7,15 +7,7 @@ const mongoose = require("mongoose");
 const app = express();
 
 /* CORS FIRST */
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      process.env.CLIENT_URL,
-    ],
-    credentials: true,
-  })
-);
+app.use(cors());
 
 app.use(
   express.json({
