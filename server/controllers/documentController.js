@@ -4,6 +4,7 @@ const Document = require("../models/Document");
 
 const uploadDocument = async (req, res) => {
   try {
+    console.log("=== UPLOAD START ===");
     console.log("FILE:", req.file);
 
     const document = await Document.create({
@@ -11,16 +12,18 @@ const uploadDocument = async (req, res) => {
       filePath: req.file.path,
     });
 
+    console.log("=== DOCUMENT SAVED ===");
+
     res.status(201).json(document);
   } catch (error) {
-    console.error("UPLOAD ERROR:", error);
+    console.error("=== UPLOAD ERROR ===");
+    console.error(error);
 
     res.status(500).json({
       message: error.message,
     });
   }
 };
-
 const getDocuments = async (req, res) => {
   try {
     const documents = await Document.find().sort({
