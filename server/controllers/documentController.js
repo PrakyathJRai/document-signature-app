@@ -24,6 +24,7 @@ const uploadDocument = async (req, res) => {
     });
   }
 };
+
 const getDocuments = async (req, res) => {
   try {
     const documents = await Document.find().sort({
