@@ -22,15 +22,16 @@ function App() {
   const [signing, setSigning] = useState(false);
 
 const fetchDocuments = async () => {
+  console.log("API URL =", import.meta.env.VITE_API_URL);
+
   try {
-  const res = await axios.get(
-  `${import.meta.env.VITE_API_URL}/api/docs`
-);
+    const res = await axios.get(
+      `${import.meta.env.VITE_API_URL}/api/docs`
+    );
 
     setDocuments(res.data);
   } catch (error) {
     console.error(error);
-    toast.error("Failed to fetch documents");
   }
 };
 
