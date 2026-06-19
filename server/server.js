@@ -22,10 +22,24 @@ app.use(
   })
 );
 
+/* REQUEST LOGGER */
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
+
+/* TEST ROUTE */
+app.post("/test-upload", (req, res) => {
+  res.json({
+    message: "POST route working",
+  });
+});
+
 const authRoutes = require("./routes/authRoutes");
 const protectedRoutes = require("./routes/protectedRoutes");
 const documentRoutes = require("./routes/documentRoutes");
 const signPdfRoute = require("./routes/signPdfRoute");
+
 app.use("/api/auth", authRoutes);
 app.use("/api", protectedRoutes);
 app.use("/api/docs", documentRoutes);
