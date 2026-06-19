@@ -23,9 +23,9 @@ function App() {
 
 const fetchDocuments = async () => {
   try {
-    const res = await axios.get(
-      "http://localhost:5000/api/docs"
-    );
+  const res = await axios.get(
+  `${import.meta.env.VITE_API_URL}/api/docs`
+);
 
     setDocuments(res.data);
   } catch (error) {
@@ -59,7 +59,7 @@ const signPdf = async () => {
     setSigning(true);
 
     const res = await axios.post(
-      "http://localhost:5000/api/sign-pdf",
+  `${import.meta.env.VITE_API_URL}/api/sign-pdf`,
       {
         pdfUrl: selectedPdf,
         signature,

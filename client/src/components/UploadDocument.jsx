@@ -19,9 +19,9 @@ const handleUpload = async () => {
 
   try {
     await axios.post(
-      "http://localhost:5000/api/docs/upload",
-      formData
-    );
+  `${import.meta.env.VITE_API_URL}/api/docs/upload`,
+  formData
+);
 
     toast.success("Document uploaded successfully!");
 

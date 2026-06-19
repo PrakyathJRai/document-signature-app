@@ -18,7 +18,7 @@ function DocumentList({
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/docs/${documentId}`,
+  `${import.meta.env.VITE_API_URL}/api/docs/${documentId}`,
         {
           method: "DELETE",
         }
@@ -52,7 +52,7 @@ function DocumentList({
             className="border border-gray-200 p-4 my-3 rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer"
             onClick={() =>
               setSelectedPdf(
-                `http://localhost:5000/${doc.filePath.replace(
+  `${import.meta.env.VITE_API_URL}/${doc.filePath.replace(
                   /\\/g,
                   "/"
                 )}`
@@ -86,7 +86,7 @@ function DocumentList({
             <div className="flex flex-wrap gap-3 mt-4">
               {/* Download Original */}
               <a
-                href={`http://localhost:5000/${doc.filePath.replace(
+                href={`${import.meta.env.VITE_API_URL}/${doc.filePath.replace(
                   /\\/g,
                   "/"
                 )}`}
@@ -103,7 +103,7 @@ function DocumentList({
               {/* Download Signed */}
               {doc.signedPdfPath && (
                 <a
-                  href={`http://localhost:5000/${doc.signedPdfPath}`}
+                  href={`${import.meta.env.VITE_API_URL}/${doc.signedPdfPath}`}
                   download
                   onClick={(e) =>
                     e.stopPropagation()
